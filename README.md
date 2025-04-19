@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shopify Product Data Explorer
 
-## Getting Started
+A Next.js application that connects to a Shopify store, fetches product data via GraphQL API, and allows viewing, searching, and exporting product information including variants and inventory details.
 
-First, run the development server:
+## Features
+
+- Connect to any Shopify store using the Storefront API access token
+- Fetch comprehensive product data including:
+  - Basic product information
+  - Variants and options
+  - Inventory information
+  - Images and pricing
+- View product data in an intuitive, sortable, and searchable table
+- Expand rows to view variant details
+- Export data in CSV format
+- Responsive UI design
+
+## Technologies Used
+
+- Next.js 15 with App Router
+- TypeScript
+- Tailwind CSS for styling
+- Apollo Client for GraphQL API calls
+- CSV-stringify for data export
+- React Icons for UI elements
+
+## Setup Instructions
+
+1. **Clone the repository:**
+
+```bash
+git clone <repository-url>
+cd shopify-store-test-app
+```
+
+2. **Install dependencies:**
+
+```bash
+npm install
+```
+
+3. **Create .env file**
+    - Use the `.env.example` file in the directory as a reference and place your access_token and store domain values there
+
+4. **Run the development server:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. **Access the application:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) in your browser to access the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setting up Shopify Store Access
 
-## Learn More
+To use this application, you need a Shopify store and a Storefront API access token:
 
-To learn more about Next.js, take a look at the following resources:
+1. Create a free Shopify Developer account and set up a store
+2. Add some test products to your store with various options and variants
+3. Generate a Storefront API access token:
+   - Go to your Shopify Admin → Apps → Develop apps
+   - Create a new app
+   - Configure Storefront API scopes (ensure `unauthenticated_read_product_listings` is enabled)
+   - Generate a Storefront API access token
+4. Use your store domain (e.g., `your-store.myshopify.com`) and the access token to connect the application
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project follows modern React best practices with a clean component architecture:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` - Next.js App Router structure
+- `app/components/` - Reusable UI components
+- `app/lib/` - Apollo client and GraphQL queries
+- `app/utils/` - Data transformation and export utilities
+- `app/services/` - Shopify API service layer
+- `app/api/` - Backend API endpoints for secure data fetching
