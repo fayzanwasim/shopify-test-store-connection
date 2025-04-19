@@ -56,9 +56,79 @@ export interface Product {
   };
 }
 
+// Define GraphQL response structure
+interface ProductNodeImage {
+  id: string;
+  url: string;
+  altText: string | null;
+}
+
+interface ProductEdgeNode {
+  id: string;
+  title: string;
+  description: string;
+  handle: string;
+  productType: string;
+  tags: string[];
+  vendor: string;
+  featuredImage: ProductNodeImage | null;
+  images: {
+    edges: Array<{
+      node: ProductNodeImage;
+    }>;
+  };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        sku: string | null;
+        availableForSale: boolean;
+        price: {
+          amount: string;
+          currencyCode: string;
+        };
+        compareAtPrice: {
+          amount: string;
+          currencyCode: string;
+        } | null;
+        selectedOptions: Array<{
+          name: string;
+          value: string;
+        }>;
+        image: ProductNodeImage | null;
+        quantityAvailable: number;
+        requiresShipping: boolean;
+        weight: number;
+        weightUnit: string;
+      };
+    }>;
+  };
+  totalInventory: number;
+  availableForSale: boolean;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+    maxVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+}
+
+interface GraphQLProductsResponse {
+  products: {
+    edges: Array<{
+      node: ProductEdgeNode;
+    }>;
+  };
+}
+
 // Transform GraphQL response to a flat structure
-export const transformProductsData = (data: any): Product[] => {
-  return data.products.edges.map((edge: any) => {
+export const transformProductsData = (data: GraphQLProductsResponse): Product[] => {
+  return data.products.edges.map((edge) => {
     const node = edge.node;
     return {
       id: node.id,
@@ -69,8 +139,8 @@ export const transformProductsData = (data: any): Product[] => {
       tags: node.tags,
       vendor: node.vendor,
       featuredImage: node.featuredImage,
-      images: node.images?.edges.map((imgEdge: any) => imgEdge.node) || [],
-      variants: node.variants?.edges.map((varEdge: any) => varEdge.node) || [],
+      images: node.images?.edges.map((imgEdge) => imgEdge.node) || [],
+      variants: node.variants?.edges.map((varEdge) => varEdge.node) || [],
       totalInventory: node.totalInventory,
       availableForSale: node.availableForSale,
       priceRange: node.priceRange,
@@ -78,9 +148,33 @@ export const transformProductsData = (data: any): Product[] => {
   });
 };
 
+// Define a proper type for flattened CSV row
+interface FlattenedProductCSV {
+  'Product ID': string;
+  'Product Title': string;
+  'Product Handle': string;
+  'Product Type': string;
+  'Product Tags': string;
+  'Product Vendor': string;
+  'Product Available': string;
+  'Total Inventory': number;
+  'Min Price': string;
+  'Max Price': string;
+  'Variant ID': string;
+  'Variant Title': string;
+  'Variant SKU': string;
+  'Variant Available': string;
+  'Variant Price': string;
+  'Compare At Price': string;
+  'Variant Options': string;
+  'Quantity Available': number | string;
+  'Requires Shipping': string;
+  'Weight': string;
+}
+
 // Create a flattened view for CSV export
-export const flattenProductsForCSV = (products: Product[]) => {
-  const flattenedRows: any[] = [];
+export const flattenProductsForCSV = (products: Product[]): FlattenedProductCSV[] => {
+  const flattenedRows: FlattenedProductCSV[] = [];
   
   products.forEach(product => {
     // If product has variants, create a row for each variant

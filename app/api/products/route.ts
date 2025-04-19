@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
     } else {
         return NextResponse.json({ products });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
-      { error: error.message || 'Error fetching products' },
+      { error: error instanceof Error ? error.message : 'Error fetching products' },
       { status: 500 }
     );
   }

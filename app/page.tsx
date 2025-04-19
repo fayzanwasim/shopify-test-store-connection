@@ -30,9 +30,9 @@ export default function Home() {
 
       const data = await response.json();
       setProducts(data.products);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching products:', err);
-      setError(err.message || 'An error occurred while fetching products');
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching products');
     } finally {
       setIsLoading(false);
     }

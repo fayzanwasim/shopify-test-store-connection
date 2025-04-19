@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
 // Create an Apollo Client instance for Shopify GraphQL API
 export const getApolloClient = (shopifyDomain: string, accessToken: string) => {

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Product } from '../utils/data-export';
+import { Product } from '../../utils/data-export';
 import { ProductVariantsTable } from './ProductVariantsTable';
+import Image from 'next/image';
 
 // ProductRow component
 export const ProductRow = ({ 
@@ -20,11 +21,15 @@ export const ProductRow = ({
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
           {product.featuredImage ? (
-            <img
-              src={product.featuredImage.url}
-              alt={product.featuredImage.altText || product.title}
-              className="h-10 w-10 rounded-full mr-3 object-cover"
-            />
+            <div className="h-10 w-10 relative rounded-full mr-3 overflow-hidden">
+              <Image
+                src={product.featuredImage.url}
+                alt={product.featuredImage.altText || product.title}
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
+            </div>
           ) : (
             <div className="h-10 w-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
               <span className="text-gray-500 text-xs">No img</span>

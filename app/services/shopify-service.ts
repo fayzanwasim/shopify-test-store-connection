@@ -8,6 +8,74 @@ interface ShopifyConfig {
   accessToken: string;
 }
 
+// Define a proper type for the product node
+interface ProductNode {
+  id: string;
+  title: string;
+  description: string;
+  handle: string;
+  productType: string;
+  tags: string[];
+  vendor: string;
+  featuredImage: {
+    id: string;
+    url: string;
+    altText: string | null;
+  } | null;
+  images: {
+    edges: Array<{
+      node: {
+        id: string;
+        url: string;
+        altText: string | null;
+      };
+    }>;
+  };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        sku: string | null;
+        availableForSale: boolean;
+        price: {
+          amount: string;
+          currencyCode: string;
+        };
+        compareAtPrice: {
+          amount: string;
+          currencyCode: string;
+        } | null;
+        selectedOptions: Array<{
+          name: string;
+          value: string;
+        }>;
+        image: {
+          id: string;
+          url: string;
+          altText: string | null;
+        } | null;
+        quantityAvailable: number;
+        requiresShipping: boolean;
+        weight: number;
+        weightUnit: string;
+      };
+    }>;
+  };
+  totalInventory: number;
+  availableForSale: boolean;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+    maxVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+}
+
 interface ProductsQueryResult {
   products: {
     pageInfo: {
@@ -15,7 +83,7 @@ interface ProductsQueryResult {
       endCursor: string;
     };
     edges: Array<{
-      node: any;
+      node: ProductNode;
     }>;
   };
 }
@@ -34,7 +102,7 @@ export class ShopifyService {
     
     try {
       while (hasNextPage) {
-        const { data }: ApolloQueryResult<ProductsQueryResult> = await this.client.query({
+        const response: ApolloQueryResult<ProductsQueryResult> = await this.client.query({
           query: GET_PRODUCTS_WITH_VARIANTS_AND_INVENTORY,
           variables: {
             first: 25,
@@ -42,13 +110,21 @@ export class ShopifyService {
           },
         });
         
-        if (data?.products) {
+        // Check if data exists and has the expected structure
+        if (!response || !response.data) {
+          throw new Error('Invalid response from Shopify API');
+        }
+        
+        const data = response.data;
+        
+        if (data.products && Array.isArray(data.products.edges)) {
           const transformedProducts = transformProductsData(data);
           products = [...products, ...transformedProducts];
           
-          hasNextPage = data.products.pageInfo.hasNextPage;
-          cursor = data.products.pageInfo.endCursor;
+          hasNextPage = Boolean(data.products.pageInfo?.hasNextPage);
+          cursor = data.products.pageInfo?.endCursor || null;
         } else {
+          console.warn('Unexpected products data structure:', JSON.stringify(data));
           hasNextPage = false;
         }
       }
@@ -56,7 +132,7 @@ export class ShopifyService {
       return products;
     } catch (error) {
       console.error('Error fetching products:', error);
-      throw error;
+      throw new Error(`Failed to fetch products: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 } 
