@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ProductsTable from './components/products/ProductsTable';
-import ShopifyConnectionStatus from './components/ShopifyCredentialsForm';
+import ShopifyConnectionStatus from './components/shopify/ShopifyCredentialsForm';
 import { Product } from './utils/data-export';
 
 export default function Home() {
