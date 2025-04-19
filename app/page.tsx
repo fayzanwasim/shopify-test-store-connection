@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ProductsTable from './components/ProductsTable';
+import ProductsTable from './components/products/ProductsTable';
 import ShopifyConnectionStatus from './components/ShopifyCredentialsForm';
 import { Product } from './utils/data-export';
 
